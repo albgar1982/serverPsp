@@ -2,9 +2,13 @@ package com.example.demo
 
 import com.google.gson.Gson
 
-data class Quiz (var pregunta: String, var respuestas : MutableList<String>,var respuestaCorrecta:Int){
+
+data class Quiz (var identificador : Int,var pregunta: String, var respuestas : MutableList<String>,var respuestaCorrecta:String){
     override fun toString(): String {
         val gson = Gson()
         return gson.toJson(this)
     }
+
+
+
 }
