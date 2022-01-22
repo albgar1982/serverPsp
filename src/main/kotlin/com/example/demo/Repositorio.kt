@@ -3,16 +3,16 @@ package com.example.demo
 class Repositorio {
     companion object{
         val preguntasYrespuestas= listOf(
-            Quiz(1,"Capital de España?", listOf("Madrid","Roma","Londres"),"Madrid"),
-            Quiz(2,"Capital de Reino Unido?", listOf("Madrid","Canberra","Londres"),"Londres"),
-            Quiz(3,"Capital de Italia?", listOf("Madrid","Roma","Nom_Pen"),"Roma"),
-            Quiz(4,"Capital de Alemania?", listOf("Berlin","Roma","Bogota"),"Berlin"),
-            Quiz(5,"Capital de Belgica?", listOf("Bruselas","Roma","Londres"),"Bruselas"),
-            Quiz(6,"Capital de Australia?", listOf("Bruselas","Roma","Canberra"),"Canberra"),
-            Quiz(7,"Capital de Iraq?", listOf("Bagdad","Roma","San Jose"),"Bagdad"),
-            Quiz(8,"Capital de Ecuador?", listOf("Quito","Roma","Londres"),"Quito"),
-            Quiz(9,"Capital de Peru?", listOf("Madrid","Bagdad","Lima"),"Lima"),
-            Quiz(10,"Capital de Marruecos?", listOf("Bogota","Rabat","Londres"),"Rabat")
+            Quiz(0,"Capital de Marruecos?", "Bogota","Rabat","Londres","Brighton","Rabat"),
+            Quiz(1,"Capital de España?", "Madrid","Roma","Londres","Maracaibo","Madrid"),
+            Quiz(2,"Capital de Reino Unido?", "Madrid","Canberra","Londres","Rabat","Londres"),
+            Quiz(3,"Capital de Italia?", "Madrid","Roma","Nom_Pen","Barcelona","Roma"),
+            Quiz(4,"Capital de Alemania?", "Berlin","Roma","Bogota","Cadiz","Berlin"),
+            Quiz(5,"Capital de Belgica?", "Bruselas","Roma","Londres","Madagascar","Bruselas"),
+            Quiz(6,"Capital de Australia?", "Bruselas","Roma","Canberra","Uruguay","Canberra"),
+            Quiz(7,"Capital de Iraq?", "Bagdad","Roma","San Jose","Hawai","Bagdad"),
+            Quiz(8,"Capital de Ecuador?", "Quito","Roma","Londres","Miami","Quito"),
+            Quiz(9,"Capital de Peru?", "Madrid","Bagdad","Lima","Valencia","Lima")
         )
     }
 }
