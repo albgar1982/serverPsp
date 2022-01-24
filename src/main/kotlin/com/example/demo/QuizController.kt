@@ -1,7 +1,6 @@
 package com.example.demo
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import org.json.JSONObject
 import org.springframework.web.bind.annotation.*
 import kotlin.random.Random
 
@@ -9,53 +8,32 @@ import kotlin.random.Random
 class QuizController {
 
     @GetMapping("solicitarPregunta")
-    fun getQuestion() : String {
-        val indice=Random.nextInt(0,Repositorio.preguntasYrespuestas.size) //Cogemos un objeto Quiz aleatorio del repositorio
+    fun getQuestion(): String {
+        val indice = Random.nextInt(0, Repositorio.preguntasYrespuestas.size) //Cogemos un objeto Quiz aleatorio del repositorio
         val enJson = Repositorio.preguntasYrespuestas[indice].toString() //Devuelve el Json de ese objeto Quiz
-        val gson = Gson()
-        val sType = object : TypeToken<MutableMap<String,String>>() { }.type // Creo la variable de tipo Type especificando el tipo al que quiero transformar el Json
-        val mapa = gson.fromJson<MutableMap<String,String>>(enJson, sType) //Convertimos en un Map el Json
-        mapa.remove("respuestaCorrecta") //Quitándole la K y V de "respuestaCorrecta"
-        return gson.toJson(mapa) //Devolvemos el Map en Json
+        val objetoJson = JSONObject(enJson)
+        objetoJson.remove("respuestaCorrecta")
+        return objetoJson.toString()
     }
 
     @GetMapping("responder/{id}/{respuesta}")
-    fun answer(@PathVariable id:Int,@PathVariable respuesta : String) : String{
-        var aDevolver=""
-
-        if (id >=0 && id < Repositorio.preguntasYrespuestas.size)
-            if(Repositorio.preguntasYrespuestas[id].respuestaCorrecta==respuesta)
-                aDevolver="Respuesta correcta"
-            else
-                aDevolver="Respuesta incorrecta"
-        else
-            aDevolver="Numero de pregunta incorrecto"
-        return aDevolver
-
-        //Esto funciona mientras se mantenga que los identificadores de las preguntas coincidan con la posición que ocupan en la lista
-        //Si no coincidieran, habría que iterar por la lista hasta encontrar el identificador deseado:
-        /*
-        var aDevolver=""
+    fun answer(@PathVariable id:Int,@PathVariable respuesta : Int) : String{
+        var aDevolver="Identificador de pregunta incorrecto"
         var i = 0
         var salir=false
         do {
-            if(Repositorio.preguntasYrespuestas[i].identificador==id)
-                salir=true
+            if(Repositorio.preguntasYrespuestas[i].identificador==id) {
+                salir = true
+                aDevolver = if (Repositorio.preguntasYrespuestas[i].respuestaCorrecta == respuesta)
+                    "Respuesta correcta"
+                else
+                    "Respuesta incorrecta"
+            }
             else
                 i++
         }while (!salir && i<Repositorio.preguntasYrespuestas.size)
 
-        if(salir) {
-            if (Repositorio.preguntasYrespuestas[i].respuestaCorrecta == respuesta)
-                aDevolver = "Respuesta correcta"
-            else
-                aDevolver = "Respuesta incorrecta"
-        }
-        else
-            aDevolver="Identificador de pregunta incorrecto"
-
         return aDevolver
-        */
     }
 
 
