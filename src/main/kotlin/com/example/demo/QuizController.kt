@@ -70,12 +70,18 @@ class QuizController(private val userRepository: UserRepository) {
     fun appendUser(@PathVariable usuario: String, @PathVariable contrasenia: String): String {
         val token = crearToken()
         val fecha = Calendar.getInstance()
-        val posibleUsuario = comprobarUsuarioYcontrasenia(usuario, contrasenia)
+        val posibleUsuario = comprobarUsuario(usuario)
+
         if (posibleUsuario != null) {
-            //Ya existe el usuario
-            posibleUsuario.token = token
-            posibleUsuario.fecha = fecha
-            userRepository.save(posibleUsuario)
+            //si existe el usuario
+            if(comprobarContraseña(posibleUsuario,contrasenia)){
+                //Si la contra es buena, le doy un token nuevo, lo salvo y devuelvo el token para que siga el juego
+                posibleUsuario.token = token
+                posibleUsuario.fecha = fecha
+                userRepository.save(posibleUsuario)
+            }
+            else //Si no, devuelvo:
+                return "Contraseña incorrecta"
         } else {
             val user = User(usuario, contrasenia, token, fecha, generaListaIdsPreguntas())
             userRepository.save(user)
@@ -86,7 +92,11 @@ class QuizController(private val userRepository: UserRepository) {
         return token
     }
 
-    private fun comprobarUsuarioYcontrasenia(usuario: String, contrasenia: String): User? {
+    private fun comprobarContraseña(usuario: User,contrasenia: String): Boolean {
+        return usuario.contrasenia==contrasenia
+    }
+
+    private fun comprobarUsuario(usuario: String): User? {
         var user: User? = null
         val listaUsuarios = userRepository.findAll()
         var i = 0
@@ -95,7 +105,7 @@ class QuizController(private val userRepository: UserRepository) {
             if(listaUsuarios.isEmpty())
                 salir = true
             else{
-                if (listaUsuarios[i].usuario == usuario && listaUsuarios[i].contrasenia == contrasenia) {
+                if (listaUsuarios[i].usuario == usuario) {
                     user = listaUsuarios[i]
                     salir = true
                 } else
