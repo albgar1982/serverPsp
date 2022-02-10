@@ -17,8 +17,10 @@ class QuizController(private val userRepository: UserRepository) {
             println("ERROR")
             return "ERROR"
         } else {
-            if(usuario.idPreguntas.size==0)
+            if (usuario.idPreguntas.size == 0)
                 return "No quedan preguntas"
+            usuario.fecha=Calendar.getInstance()
+            userRepository.save(usuario)
             val numPregunta = usuario.idPreguntas[Random.nextInt(0, usuario.idPreguntas.size)]
             var i = 0
             var salir = false
@@ -48,6 +50,8 @@ class QuizController(private val userRepository: UserRepository) {
             println("ERROR")
             return "ERROR"
         } else {
+            usuario.fecha=Calendar.getInstance()
+            userRepository.save(usuario)
             var aDevolver = "Identificador de pregunta incorrecto"
             var i = 0
             var salir = false
@@ -73,15 +77,14 @@ class QuizController(private val userRepository: UserRepository) {
         val posibleUsuario = comprobarUsuario(usuario)
 
         if (posibleUsuario != null) {
-            //si existe el usuario
-            if(comprobarContraseña(posibleUsuario,contrasenia)){
-                //Si la contra es buena, le doy un token nuevo, lo salvo y devuelvo el token para que siga el juego
+            //si existe el usuario, comprobamos la contra. Si es buena, le renovamos el token
+            if (comprobarContraseña(posibleUsuario, contrasenia)) {
+                //Si la contra es buena, le doy el token nuevo, lo salvo y devuelvo el token para que siga hacia el juego
                 posibleUsuario.token = token
                 posibleUsuario.fecha = fecha
                 userRepository.save(posibleUsuario)
-            }
-            else //Si no, devuelvo:
-                return "Contraseña incorrecta"
+            } else //Si no, devuelvo:
+                return "Contrasenia incorrecta"
         } else {
             val user = User(usuario, contrasenia, token, fecha, generaListaIdsPreguntas())
             userRepository.save(user)
@@ -92,8 +95,8 @@ class QuizController(private val userRepository: UserRepository) {
         return token
     }
 
-    private fun comprobarContraseña(usuario: User,contrasenia: String): Boolean {
-        return usuario.contrasenia==contrasenia
+    private fun comprobarContraseña(usuario: User, contrasenia: String): Boolean {
+        return usuario.contrasenia == contrasenia
     }
 
     private fun comprobarUsuario(usuario: String): User? {
@@ -102,9 +105,9 @@ class QuizController(private val userRepository: UserRepository) {
         var i = 0
         var salir = false
         do {
-            if(listaUsuarios.isEmpty())
+            if (listaUsuarios.isEmpty())
                 salir = true
-            else{
+            else {
                 if (listaUsuarios[i].usuario == usuario) {
                     user = listaUsuarios[i]
                     salir = true
@@ -123,36 +126,32 @@ class QuizController(private val userRepository: UserRepository) {
         return token
     }
 
-    private fun checkTokenTime(usuario: User?): Boolean {
+    private fun checkTokenTime(usuario: User): Boolean {
         var caducado = false
 
-        usuario?.let {
-            val momentoActual = Calendar.getInstance()
-            val segundosActuales = momentoActual.timeInMillis
-            val segundosToken = it.fecha.timeInMillis
-            val tiempoTranscurrido = segundosActuales - segundosToken
-            if (tiempoTranscurrido / (1000 * 60) > 5)
-                caducado = true
-        }
+        val momentoActual = Calendar.getInstance()
+        val segundosActuales = momentoActual.timeInMillis
+        val segundosToken = usuario.fecha.timeInMillis
+        val tiempoTranscurrido = segundosActuales - segundosToken
+        if (tiempoTranscurrido.toFloat() / (1000 * 60) > 5.00)
+            caducado = true
+        println("Han pasado ${tiempoTranscurrido.toFloat()/ (1000 * 60)} minutos")
 
         return caducado
     }
 
     private fun encontrarUsuario(token: String): Int {
-        var idUsuario = -1
+        var idUsuario = 0
         val listaUsuarios = userRepository.findAll()
         var i = 0
         var salir = false
         do {
             if (listaUsuarios[i].token == token) {
-                println("He encontrado el token $token. El del usuario es: ${listaUsuarios[i].token}")
+                println("He encontrado el token $token. El del usuario es: ${listaUsuarios[i].token} en la posición $i de la lista de la database")
                 idUsuario = listaUsuarios[i].id
                 salir = true
-            } else{
-                println("NO he encontrado el token $token. El del usuario es: ${listaUsuarios[i].token}")
+            } else
                 i++
-            }
-
         } while (!salir && i < listaUsuarios.size)
         return idUsuario
     }
