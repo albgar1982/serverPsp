@@ -75,15 +75,13 @@ class QuizController(private val userRepository: UserRepository) {
     fun appendUser(@PathVariable usuario: String, @RequestBody contrasenia: String): String {
         val token = crearToken()
         val fecha = Calendar.getInstance()
-        val gson = Gson()
-        val contra = gson.fromJson(contrasenia,String::class.java)
-        println("La contraseña que viene en el requestBody es $contra")
+        println("La contraseña que viene en el requestBody es $contrasenia")
         val posibleUsuario = comprobarUsuario(usuario)
 
         if (posibleUsuario != null) {
             //si existe el usuario, comprobamos la contra. Si es buena, le renovamos el token
 
-            if (comprobarContraseña(posibleUsuario, contra)) {
+            if (comprobarContraseña(posibleUsuario, contrasenia)) {
                 //Si la contra es buena, le doy el token nuevo, lo salvo y devuelvo el token para que siga hacia el juego
                 posibleUsuario.token = token
                 posibleUsuario.fecha = fecha
@@ -91,7 +89,7 @@ class QuizController(private val userRepository: UserRepository) {
             } else //Si no, devuelvo:
                 return "Contrasenia incorrecta"
         } else {
-            val user = User(usuario, contra, token, fecha, generaListaIdsPreguntas())
+            val user = User(usuario, contrasenia, token, fecha, generaListaIdsPreguntas())
             userRepository.save(user)
         }
         userRepository.findAll().forEach {
